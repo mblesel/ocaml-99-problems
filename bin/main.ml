@@ -410,8 +410,7 @@ let rec bool_permutations2 variables acc =
         @ bool_permutations2 tl ((hd, false) :: acc)
     | [] -> acc
 in
-bool_permutations2 ["a";"b"] []
-;;
+    bool_permutations2 [ "a"; "b" ] []
 
 let match_var_values variables list =
     let open Base in
@@ -447,6 +446,60 @@ and c = Var "c" in
     table
       [ "a"; "b"; "c" ]
       (Or (And (a, Or (b, c)), Or (And (a, b), And (a, c))))
+
+(* Problem 49 *)
+let gray_wrong n =
+    let rec aux k acc =
+        let open Base in
+        if k = 1
+        then acc
+        else
+          aux
+            (k - 1)
+            (List.concat (List.map ~f:(fun x -> [ "0" ^ x; "1" ^ x ]) acc))
+    in
+        aux n [ "0"; "1" ]
+;;
+
+gray_wrong 1
+
+let gray n =
+    let open Base in
+    let rec aux k acc =
+        if k < n
+        then (
+          let l1, l2 =
+              List.fold
+                ~init:([], [])
+                ~f:(fun (acc1, acc2) x -> ("0" ^ x) :: acc1, ("1" ^ x) :: acc2)
+                acc
+          in
+              aux (k + 1) (List.rev l1 @ l2))
+        else acc
+    in
+        aux 1 [ "0"; "1" ]
+;;
+
+(* Binary Trees *)
+type 'a binary_tree =
+  | Empty
+  | Node of 'a * 'a binary_tree * 'a binary_tree
+;;
+
+(* Prolem 55 *)
+let rec cbal_tree (n:int) =
+    let open Base in
+    if n = 0 then 
+        Empty
+    else if (n % 2) = 1 then
+        Node ("x", cbal_tree (n/2), cbal_tree (n/2))
+    else if (n % 2) = 0 then
+        Node ("x", cbal_tree ((n/2)-1), cbal_tree (n/2))
+    else
+        failwith "unexpected 0"
+;;
+
+
 
 (* Run tests cases *)
 let test nr f inp out =
